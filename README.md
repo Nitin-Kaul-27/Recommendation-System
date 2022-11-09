@@ -1,2 +1,5 @@
-# Recommendation-System
-This Repository contains codes for Movie Recommendation System. Algorithms which are used for designing are Content Filtering, Collaborative Filtering and also the combined output of both. Coding is done in Python. 
+
+
+
+https://user-images.githubusercontent.com/108913229/200748403-179051b9-712d-4818-a2ca-e1e036bdddba.mp4
+

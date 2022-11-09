@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movies</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <style type = "text/css">
+
+		#header{
+            background: url("https://flipcause-production-assets.s3.amazonaws.com/assets/uploads/lookandfeel/pexels-photo-1092364.jpeg");
+			}
+	hr{
+	width: 500px;
+	border-top: 1.5px solid rgba(0,0,0,0.5);
+	border-bottom: 1.5 px solid rgba(0,0,0,0.5);
+	}
+
+	</style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+	<div class="container">
+		<a class="navbar-brand"> Recommendation System</a>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item"><a href="/HOME" class="nav-link">Home</a></li>
+				<li class="nav-item"><a href="/Book" class="nav-link">Books</a></li>
+				<li class="nav-item active"><a href="#" class="nav-link">Movies</a></li>
+			</ul>
+        </div>
+	</div>
+</nav>
+
+<!-- HEADER -->
+<div id="header" class="jumbotron text-center">
+	<h1 class="display-3">TOP MOVIES OF ALL TIME</h1>
+	<hr>
+	<a href="/Movie_recommend" class="btn btn-info btn-lg">Get Recommendations</a>
+</div>
+
+<!-- Main content -->
+
+<div class="container">
+	<div class="row">
+		{% for i in range(movie_name|length) %}
+		<div class="col-md-3 mb-3">
+			<div class="card">
+				<div class = "embed-responsive embed-responsive-1by1">
+		         <img alt="Card image cap"  class="card-img-top embed-responsive-item" src=" {{ image[i] }}  " alt="Not Found" onerror=this.src="https://www.pngitem.com/pimgs/m/558-5585968_thumb-image-not-found-icon-png-transparent-png.png">
+				</div>
+		         <div class="card-body">
+			         <h6 class="card-title">{{ movie_name[i] }}</h6>
+                     <p>Rating - {{ rating[i] }}</p>
+                     <p>Number of Votes - {{ votes[i] }}</p>
+
+		         </div>
+	        </div>
+	    </div>
+		{% endfor %}
+	</div>
+</div>
+
+
+
+<script src="http://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+

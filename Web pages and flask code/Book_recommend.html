@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommender</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+	<style type = "text/css">
+body{
+	background: url("https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1169&q=80") no-repeat fixed;
+    background-size: cover;
+	background-position: center;
+	font-family: Lato;
+	color: white;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;;
+
+}
+#content{
+	text-align: center;
+	padding-top: 3%;
+	text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
+	             0px 8px 13px rgba(0,0,0,0.1),
+	             0px 18px 23px rgba(0,0,0,0.1);
+}
+html{
+	height: 100%;
+}
+hr{
+	width: 400px;
+	border-top: 1px solid #f8f8f8;
+	border-bottom: 1 px solid rgba(0,0,0,0.2);
+}
+h1{
+   font-weight: 700;
+   font-size: 5em;
+}
+h6{
+    color: black;
+}
+h4{
+    text-align: center;
+}
+
+
+p{
+    color: black;
+}
+.btn1{
+    margin-bottom: 40px;
+    width: 5%;
+    padding: 4px;
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.btn1:hover{
+    background: #0b7dda;
+}
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+    color: black;
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: black;
+}
+</style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+	<div class="container">
+		<a class="navbar-brand"> Recommendation System</a>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item"><a href="/HOME" class="nav-link">Home</a></li>
+				<li class="nav-item active"><a href="/Book" class="nav-link">Books</a></li>
+				<li class="nav-item"><a href="/Movie" class="nav-link">Movies</a></li>
+			</ul>
+        </div>
+	</div>
+</nav>
+
+
+
+<!-- HEADER -->
+<!--
+<div id="header" class="jumbotron text-center">
+	<h1 class="display-4">GET RECOMMENDATIONS FOR MOVIE</h1>
+	<form>
+		<input type="text" class=" form-control"><br>
+		<input type="submit" class="btn btn-lg btn-info">
+	</form>
+</div>
+-->
+<div class="container">
+    <div id="content">
+       <h1 class="display-4">GET RECOMMENDATIONS FOR BOOK</h1>
+        <hr>
+        <!--
+	<form>
+		<input type="text" class=" form-control"><br>
+		<input type="submit" class="btn1" class="btn btn-lg btn-info">
+	</form>
+	-->
+        <form autocomplete="off" action="/recommend_books" method="post" >
+            <div class="autocomplete" >
+                <input id="myInput" type="text" class="form-control" name="user_input" placeholder="Book Name">
+            </div>
+            <!-- <input type="submit" class="btn1" class="btn btn-info btn-lg"> -->
+            <button class="btn1" type="submit"><i class="fa fa-search"></i></button>
+            <!-- <input type="submit"> -->
+        </form>
+
+        <script>
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+/*An array containing all the book names:*/
+
+var books = ["2010: Odyssey Two","A Case of Need","A Civil Action","A Fine Balance","A Heartbreaking Work of Staggering Genius","A Map of the World","A Painted House","A Time to Kill","A Walk to Remember","A Widow for One Year","A Wrinkle in Time","A Year in Provence","Absolute Power","After the Fire","Airframe","All Around the Town","American Gods","An Instance of the Fingerpost","Angelas Ashes","Animal Dreams","Animal Farm","Anne of the Island","Awakening","Birthright","Black and Blue","Blackout","Bleachers","Blindsighted","Blood Work","Born in Fire","Born in Ice","Boys Life","Breathing Lessons","Can You Keep a Secret?","Cause of Death","Changes","Charming Billy","Choke","Cold Mountain","Coming Home","Congo","Contagion","Daring to Dream","Dark Angel","Dark Rivers of the Heart","Daughter of Fortune","Dead Run","Deadly Decisions","Deception","Deception Point","Degree of Guilt","Demon Seed","Dolores Claiborne","Drowning Ruth","Echoes","Ella Minnow Pea: A Novel in Letters","Empire Falls","Eternity","Extreme Measures","Eyes of Prey","Eyes of a Child","Fahrenheit 451","Faking It","Fast Food Nation: The Dark Side of the All-American Meal","Fear Nothing","Fever","Fingersmith","Firefly Beach","Firefly Summer","Five Quarters of the Orange","Flesh and Blood","Forbidden","Foucaults Pendulum","Fried Green Tomatoes at the Whistle Stop Cafe","From Potters Field","From the Corner of His Eye","Geralds Game","Girl with a Pearl Earring","Gone for Good","Good in Bed","Guardian","Haunted","Haven","Heartbeat","Heartbreaker","Heartless","Hearts in Atlantis","Heaven","Homecoming","Hostage","House of Sand and Fog","How Stella Got Her Groove Back","Hunted","Hush","Ill Be Seeing You","Insomnia","Into the Wild","Island of the Blue Dolphins","It Had to Be You","Its Always Something","Jewel","Jonathan Livingston Seagull","Kiss the Girls","Last Chance Saloon","Lawless","Legacy","Life of Pi","Lightning","Lord of the Flies","Lost and Found","Loves Music, Loves to Dance","Me Talk Pretty One Day","Mercy","Message from Nam","Message in a Bottle","Midnight","Midnight in the Garden of Good and Evil","Misery","Moo","Mr. Murder","Mutation","Mystique","Naked","Native Tongue","Needful Things","Nerd in Shining Armor","Night Sins","Nights in Rodanthe","Nightshade","Nothing Lasts Forever","Now You See Me","Oldest Living Confederate Widow Tells All","One","One True Thing","Open House","Open Season","Oryx and Crake","Outbreak","Palomino","Paradise","Peace Like a River","Perfect","Pet Sematary","Portrait in Death","Possession","Postmortem","Presumed Innocent","Prey","Primary Colors: A Novel of Politics","Private Screening","Prodigal Summer","Promises","Ransom","Reap the Wind","Rebecca","Reckless","Redemption","Relic","Remember","Remember Me","Retribution","Rising Tides","Rules of Prey","Sacred Sins","Saint Maybe","Sanctuary","Scandal","Scarlet Feather","Second Child","Secret History","Secrets","Seduction in Death","See How They Run","SeinLanguage","Seize the Night","Shadows","Shattered","Sick Puppy","Silent Night","Skipping Christmas","Sleepers","Smillas Sense of Snow","Snow Falling on Cedars","Sole Survivor","Someone to Watch Over Me","Space","Sphere","Standing in the Rainbow","Stones from the River","Strange Highways","Summer Sisters","Taken","Tales of a Fourth Grade Nothing","Tara Road","The Andromeda Strain","The Apprentice","The Awakening","The Bad Place","The Beach House","The Bean Trees","The Bonesetters Daughter","The Bonfire of the Vanities","The Bourne Identity","The Bourne Supremacy","The Bourne Ultimatum","The Boy Next Door","The Brethren","The Burden of Proof","The Catcher in the Rye","The Center of Everything","The Chamber","The Charm School","The Chosen","The Cider House Rules","The Client","The Color Purple","The Color of Water: A Black Mans Tribute to His White Mother","The Copper Beech","The Corrections","The Cradle Will Fall","The Crimson Petal and the White","The Da Vinci Code","The Dark Half","The Deep End of the Ocean","The Diary of Ellen Rimbauer: My Life at Rose Red","The Eyes of Darkness","The Face of Deception","The Firm","The Five People You Meet in Heaven","The Funhouse","The Girl Who Loved Tom Gordon","The Glass Lake","The Guardian","The Horse Whisperer","The House of the Spirits","The Hunt","The Indian in the Cupboard","The Joy Luck Club","The Kiss","The Kitchen Gods Wife","The Lake House","The Lost World","The Mulberry Tree","The Next Accident","The Night Before","The Other Woman","The Outside Man","The Pelican Brief","The Perfect Husband","The Phantom Tollbooth","The Pillars of the Earth","The Pilots Wife","The Prayer of Jabez: Breaking Through to the Blessed Life","The Prince of Tides","The Promise","The Quiet Game","The Rainmaker","The Reader","The Reef","The Rescue","The Ring","The Robber Bride","The Secret Life of Bees","The Smoke Jumper","The Source","The Stranger","The Summons","The Switch","The Talisman","The Tao of Pooh","The Temple of My Familiar","The Third Twin","The Thorn Birds","The Ugly Duckling","The Virgin Blue","The Virgin Suicides","The Voice of the Night","The Weight of Water","The Winner","Thicker Than Water","Thinner","Three Junes","Timeline","To Kill a Mockingbird","To Say Nothing of the Dog","Total Control","Touching Evil","True Blue","Twilight Eyes","Two for the Dough","Under the Tuscan Sun","Unnatural Exposure","Untamed","Vanished","Visions of Sugar Plums","Voyager","Watchers","Welcome to the World, Baby Girl!","Well Meet Again","Where Are the Children?","While My Pretty One Sleeps","Whispers","Windmills of the Gods","Winter Moon","Zen and the Art of Motorcycle Maintenance: An Inquiry Into Values","Zoya"]
+    /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+autocomplete(document.getElementById("myInput"), books);
+</script>
+
+    </div>
+
+</div>
+
+
+<!-- Main content -->
+
+<!-- Main content -->
+{% if data %}
+<h4>Top Similar Books</h4>
+<div class="container">
+    <div class="row">
+
+            {% for i in data %}
+                <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="embed-responsive embed-responsive-1by1">
+                        <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{ i[3] }}" alt="Not Found" onerror=this.src="https://www.pngitem.com/pimgs/m/558-5585968_thumb-image-not-found-icon-png-transparent-png.png">
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">{{ i[2] }}</h6>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+
+    </div>
+</div>
+{% endif %}
+
+{% if data %}
+<h4>Similar users also read</h4>
+<div class="container">
+    <div class="row">
+
+            {% for i in data %}
+                <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="embed-responsive embed-responsive-1by1">
+                        <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{ i[1] }}" alt="Not Found" onerror=this.src="https://www.pngitem.com/pimgs/m/558-5585968_thumb-image-not-found-icon-png-transparent-png.png">
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">{{ i[0] }}</h6>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+
+    </div>
+</div>
+{% endif %}
+
+
+</body>
+</html>
+
+

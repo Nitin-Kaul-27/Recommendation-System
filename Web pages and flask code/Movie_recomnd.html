@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Recommender</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+	<style type = "text/css">
+body{
+	background: url("https://images.unsplash.com/photo-1493804714600-6edb1cd93080?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80") no-repeat fixed;
+    background-size: cover;
+	background-position: center;
+	font-family: Lato;
+	color: white;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+}
+#content{
+	text-align: center;
+	padding-top: 3%;
+	text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
+	             0px 8px 13px rgba(0,0,0,0.1),
+	             0px 18px 23px rgba(0,0,0,0.1);
+}
+html{
+	height: 100%;
+}
+hr{
+	width: 400px;
+	border-top: 1px solid #f8f8f8;
+	border-bottom: 1 px solid rgba(0,0,0,0.2);
+}
+h1{
+   font-weight: 700;
+   font-size: 5em;
+}
+h6{
+    color: black;
+}
+h4{
+    text-align: center;
+}
+p{
+    color: black;
+}
+drop{
+    color: black;
+}
+.btn1{
+    margin-bottom: 40px;
+    width: 5%;
+    padding: 4px;
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.btn1:hover{
+    background: #0b7dda;
+}
+/*the container must be positioned relative:*/
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+    color: black;
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: black;
+}
+</style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top" >
+	<div class="container">
+		<a class="navbar-brand"> Recommendation System</a>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item"><a href="/HOME" class="nav-link">Home</a></li>
+				<li class="nav-item"><a href="/Book" class="nav-link">Books</a></li>
+				<li class="nav-item active"><a href="/Movie" class="nav-link">Movies</a></li>
+			</ul>
+        </div>
+	</div>
+</nav>
+
+
+
+<!-- HEADER -->
+<!--
+<div id="header" class="jumbotron text-center">
+	<h1 class="display-4">GET RECOMMENDATIONS FOR MOVIE</h1>
+	<form>
+		<input type="text" class=" form-control"><br>
+		<input type="submit" class="btn btn-lg btn-info">
+	</form>
+</div>
+-->
+<div class="container">
+    <div id="content">
+       <h1 class="display-4">GET RECOMMENDATIONS FOR MOVIE</h1>
+        <hr>
+        <!--
+	<form>
+		<input type="text" class=" form-control"><br>
+		<input type="submit" class="btn1" class="btn btn-lg btn-info">
+	</form>
+	-->
+        <form autocomplete="off" action="/recommend_movie" method="post" >
+            <div class="autocomplete" >
+                <input id="myInput" type="text" class="form-control" name="movie_input" placeholder="Movie Name">
+            </div>
+            <!-- <input type="submit" class="btn1" class="btn btn-lg btn-info"> -->
+            <button class="btn1" type="submit"><i class="fa fa-search"></i></button>
+            <!-- <input type="submit"> -->
+        </form>
+
+        <script>
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+/*An array containing all the movie names:*/
+
+var movies = ["10 Things I Hate About You","15 Minutes","20,000 Leagues Under the Sea","2001: A Space Odyssey","21 Grams","25th Hour","28 Weeks Later","4 Months, 3 Weeks and 2 Days","40 Days and 40 Nights","42nd Street","5 Days of War","50 First Dates","8 Mile","88 Minutes","A Beautiful Mind","A Bridge Too Far","A Few Good Men","A Hard Days Night","A Nightmare on Elm Street","A Streetcar Named Desire","A Time to Kill","A Very Long Engagement","A View to a Kill","A Woman, a Gun and a Noodle Shop","Absolute Power","Adaptation.","Akira","Alexander","Alien","All the Kings Men","Almost Famous","Along Came a Spider","Amadeus","American Beauty","American Graffiti","American History X","American Pie","American Pie 2","American Psycho","American Splendor","Amores perros","An Unfinished Life","Antz","Apocalypse Now","Arlington Road","Armageddon","Army of Darkness","As Good as It Gets","As It Is in Heaven","Austin Powers in Goldmember","Back to the Future","Back to the Future Part II","Back to the Future Part III","Bad Boys II","Bandidas","Barry Lyndon","Basic Instinct 2","Basquiat","Batman","Batman & Robin","Batman Begins","Batman Forever","Batman Returns","Beavis and Butt-Head Do America","Because I Said So","Beetlejuice","Before Sunrise","Before Sunset","Being John Malkovich","Bend It Like Beckham","Beverly Hills Cop III","Big","Big Fish","Big Trouble","Big Trouble in Little China","Bill & Teds Bogus Journey","Bill & Teds Excellent Adventure","Billy Elliot","Birthday Girl","Black Rain","Blade Runner","Blood Diamond","Blow","Boogeyman","Boogie Nights","Boyz n the Hood","Brazil","Breakdown","Bridesmaids","Bridge to Terabithia","Bring It On","Brother","Brothers","Cape Fear","Captain Corellis Mandolin","Cars","Casablanca","Casino","Cat on a Hot Tin Roof","Catch Me If You Can","Catwoman","Changing Lanes","Charlie Wilsons War","Charlie and the Chocolate Factory","Charlies Angels","Chasing Amy","Chill Factor","Cinderella Man","Close Encounters of the Third Kind","Closer","Cold Mountain","Con Air","Confessions of a Dangerous Mind","Conquest of the Planet of the Apes","Contraband","Cop Land","Copying Beethoven","Crank","Crash","Crouching Tiger, Hidden Dragon","Cube","Cutthroat Island","D.E.B.S.","Dancer in the Dark","Dances with Wolves","Dark Blue","Das Boot","Dave Chappelles Block Party","Dawn of the Dead","Days of Thunder","Dead Poets Society","Dear Frankie","Deconstructing Harry","Deep Blue Sea","Die Hard","Die Hard 2","Disclosure","Doctor Zhivago","Dogtown and Z-Boys","Don Juan DeMarco","Donnie Darko","Doom","Downfall","Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb","Dragonslayer","Dreamgirls","Dune","Eastern Promises","Ed Wood","Edward Scissorhands","Elite Squad","Elizabeth","Enchanted","Enough","Entrapment","Escape from New York","Escape from the Planet of the Apes","Eternal Sunshine of the Spotless Mind","Evil Dead II","Executive Decision","Eyes Wide Shut","Fahrenheit 9/11","Fight Club","Final Fantasy: The Spirits Within","Finding Forrester","Finding Nemo","Finding Neverland","Flags of Our Fathers","Flashdance","Footloose","Forrest Gump","Four Rooms","Freedom Writers","Galaxy Quest","Gandhi","Gattaca","Gerry","Ghost Dog: The Way of the Samurai","Ghost Rider","Girl with a Pearl Earring","Gods and Monsters","GoldenEye","Good Morning, Vietnam","Good Will Hunting","Gothika","Gremlins","Gremlins 2: The New Batch","Hairspray","Halloween","Hang em High","Hannibal Rising","Harley Davidson and the Marlboro Man","Harry Potter and the Goblet of Fire","Harry Potter and the Prisoner of Azkaban","Heavenly Creatures","Hellboy","Hero","Hidalgo","High Noon","Hitman","Hook","Horrible Bosses","Hostage","Hostel","Hot Fuzz","Hotel Rwanda","House of 1000 Corpses","Hulk","I Heart Huckabees","I, Robot","Ice Age","Ice Age: The Meltdown","Idle Hands","Imagine Me & You","In Time","In the Bedroom","In the Name of the King: A Dungeon Siege Tale","Indiana Jones and the Kingdom of the Crystal Skull","Indiana Jones and the Last Crusade","Indiana Jones and the Temple of Doom","Inside Man","Inspector Gadget","Iron Man","It Happened One Night","Jakob the Liar","Jarhead","Jaws: The Revenge","Jay and Silent Bob Strike Back","Jurassic Park","Jurassic Park III","Just Visiting","K-19: The Widowmaker","Keeping the Faith","Kevin Hart: Laugh at My Pain","Kill Bill: Vol. 1","Kill Bill: Vol. 2","Killing Zoe","Kindergarten Cop","King Kong","Kingdom of Heaven","Kiss of the Dragon","Krull","L.A. Confidential","Lara Croft Tomb Raider: The Cradle of Life","Lara Croft: Tomb Raider","Lars and the Real Girl","Lawrence of Arabia","Leaving Las Vegas","Lethal Weapon 3","Lethal Weapon 4","Letters from Iwo Jima","Licence to Kill","License to Wed","Little Children","Live and Let Die","Lock, Stock and Two Smoking Barrels","Lolita","Lost in Translation","Love Actually","Love in the Time of Cholera","Lucky Number Slevin","Lucky You","Madagascar","Magnolia","Maid in Manhattan","Malcolm X","Mambo Italiano","Manderlay","March of the Penguins","Maria Full of Grace","Mars Attacks!","Mary Poppins","Match Point","Me and You and Everyone We Know","Me, Myself & Irene","Mean Streets","Meet the Parents","Memoirs of a Geisha","Memoirs of an Invisible Man","Men in Black II","Metropolis","Million Dollar Baby","Minority Report","Mission to Mars","Mission: Impossible","Mission: Impossible II","Modern Times","Monsoon Wedding","Monster","Monsters Ball","Monsters, Inc.","Monty Python and the Holy Grail","Mr. Beans Holiday","Mr. Deeds","Mr. Hollands Opus","Mr. Smith Goes to Washington","Mrs. Doubtfire","Munich","My Best Friends Wedding","My Life Without Me","My Name Is Bruce","My Own Private Idaho","My Super Ex-Girlfriend","Mystic River","National Treasure","Night Watch","Night at the Museum","No Country for Old Men","No Reservations","Notes on a Scandal","Notting Hill","Oceans Eleven","Oceans Twelve","Octopussy","Office Space","Oliver Twist","On Her Majestys Secret Service","Once in a Lifetime: The Extraordinary Story of the New York Cosmos","One Flew Over the Cuckoos Nest","Open Water","Out of Africa","Out of Sight","Out of Time","Outbreak","Pale Rider","Pandoras Box","Pans Labyrinth","Paris, je taime","Payback","Perfume: The Story of a Murderer","Persepolis","Pi","Pieces of April","Pink Flamingos","Pirates of the Caribbean: Dead Mans Chest","Pirates of the Caribbean: The Curse of the Black Pearl","Pitch Black","Planet of the Apes","Pocketful of Miracles","Poltergeist","Predator 2","Psycho","Pulp Fiction","Raiders of the Lost Ark","Rain Man","Raising Helen","Rambo III","Rebecca","Red Planet","Red River","Reign Over Me","Reindeer Games","Rent","Reservoir Dogs","Revolutionary Road","Riding Giants","Rize","Roar","Rocky","Rocky Balboa","Roger & Me","Romeo Is Bleeding","Romeo Must Die","Rosemarys Baby","Run Lola Run","Saw","Saw II","Saw III","Saw IV","Scarface","Scary Movie 2","Schindlers List","School of Rock","Scoop","Scream","Scream 2","Scream 3","Seabiscuit","Secret Window","Seven Samurai","Severance","Shaft","Shakespeare in Love","Shall We Dance?","Shaun of the Dead","Shortbus","Shrek","Shrek 2","Shrek the Third","Sicko","Silent Hill","Sin City","Snakes on a Plane","Snatch","Snow White and the Seven Dwarfs","Solaris","Some Like It Hot","Southland Tales","Space Jam","Spanglish","Speed 2: Cruise Control","Spellbound","Spider-Man 2","Spy Game","Stand by Me","Star Trek II: The Wrath of Khan","Star Trek III: The Search for Spock","Star Trek IV: The Voyage Home","Star Trek V: The Final Frontier","Star Trek VI: The Undiscovered Country","Star Trek: First Contact","Star Trek: Generations","Star Trek: The Motion Picture","Star Wars: Episode II - Attack of the Clones","Star Wars: Episode III - Revenge of the Sith","Stitches","Stomp the Yard","Stranger Than Fiction","Street Kings","Stuck on You","Summer Storm","Sunshine","Superman","Sweet November","Swimming Pool","Syriana","TMNT","Taxi Driver","Teenage Mutant Ninja Turtles II: The Secret of the Ooze","Teenage Mutant Ninja Turtles III","Terminator 2: Judgment Day","Terminator 3: Rise of the Machines","Terminator Salvation","The 13th Warrior","The Addams Family","The Astronauts Wife","The Aviator","The Beach","The Big Parade","The Bounty","The Bourne Identity","The Bourne Supremacy","The Bridges of Madison County","The Butterfly Effect","The Chorus","The Chronicles of Narnia: Prince Caspian","The Chronicles of Riddick","The Constant Gardener","The Conversation","The Cotton Club","The Curse of the Jade Scorpion","The Curse of the Were-Rabbit","The Dark Knight","The Day After Tomorrow","The Departed","The Devil Wears Prada","The Devils Own","The Diving Bell and the Butterfly","The Dress","The Elephant Man","The Evil Dead","The Exorcism of Emily Rose","The Fifth Element","The First Wives Club","The Fisher King","The Flintstones","The Forbidden Kingdom","The Fountain","The French Connection","The Game","The Generals Daughter","The Glass House","The Godfather","The Godfather: Part II","The Godfather: Part III","The Golden Compass","The Good German","The Good Thief","The Good, the Bad and the Ugly","The Greatest Story Ever Told","The Green Mile","The Grudge","The Grudge 2","The Happening","The Horse Whisperer","The Host","The Hours","The Hustler","The Interpreter","The Island","The Karate Kid","The Kingdom","The Lady from Shanghai","The Last Castle","The Last Samurai","The Legend of Bagger Vance","The Life Aquatic with Steve Zissou","The Living Daylights","The Lord of the Rings: The Return of the King","The Lord of the Rings: The Two Towers","The Lost World: Jurassic Park","The Lovely Bones","The Machinist","The Matrix Revolutions","The Mist","The Mummy Returns","The Mummy: Tomb of the Dragon Emperor","The Nativity Story","The Net","The Next Best Thing","The Number 23","The Orphanage","The Out-of-Towners","The Outsiders","The Patriot","The Perfect Storm","The Pianist","The Pledge","The Polar Express","The Prestige","The Reaping","The Remains of the Day","The Rules of Attraction","The Sea Inside","The Sentinel","The Shawshank Redemption","The Shining","The Shipping News","The Silence of the Lambs","The Simpsons Movie","The Sixth Sense","The Spy Who Loved Me","The Sum of All Fears","The Tailor of Panama","The Talented Mr. Ripley","The Terminal","The Terminator","The Thing","The Thirteenth Floor","The Thomas Crown Affair","The Time Machine","The Tooth Fairy","The Untouchables","The Village","The Way of the Gun","The Wedding Planner","The Whole Nine Yards","The Whole Ten Yards","The X Files: I Want to Believe","There Will Be Blood","Theres Something About Mary","They Live","Things We Lost in the Fire","This Is 40","Titanic","To Kill a Mockingbird","Tomorrow Never Dies","Topaz","Total Recall","Trading Places","Traffic","Training Day","Trainspotting","Transamerica","Transformers","Transformers: Revenge of the Fallen","Transsiberian","True Romance","Twilight","Two Brothers","Two Weeks Notice","U-571","Under Siege 2: Dark Territory","Underworld","Valkyrie","Veer-Zaara","Videodrome","Volver","Wag the Dog","Walk the Line","War of the Worlds","Wasabi","We Own the Night","Were No Angels","Whale Rider","What Women Want","Whats Eating Gilbert Grape","When Harry Met Sally...","Willy Wonka & the Chocolate Factory","X-Men Origins: Wolverine","You Only Live Twice","Young Frankenstein","Zodiac","eXistenZ","xXx"]
+/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+autocomplete(document.getElementById("myInput"), movies);
+</script>
+
+    </div>
+
+</div>
+
+<!-- Main content -->
+{% if data %}
+<h4>Top Similar Movies</h4>
+<div class="container">
+    <div class="row">
+
+            {% for i in data %}
+                <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="embed-responsive embed-responsive-1by1">
+                        <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{ i[3] }}" alt="Not Found" onerror=this.src="https://www.pngitem.com/pimgs/m/558-5585968_thumb-image-not-found-icon-png-transparent-png.png">
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">{{ i[2] }}</h6>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+
+    </div>
+</div>
+{% endif %}
+
+{% if data %}
+<h4>Similar users also watched</h4>
+<div class="container">
+    <div class="row">
+
+            {% for i in data %}
+                <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="embed-responsive embed-responsive-1by1">
+                        <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{ i[1] }}" alt="Not Found" onerror=this.src="https://www.pngitem.com/pimgs/m/558-5585968_thumb-image-not-found-icon-png-transparent-png.png">
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">{{ i[0] }}</h6>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+
+    </div>
+</div>
+{% endif %}
+
+
+</body>
+</html>
+
+
